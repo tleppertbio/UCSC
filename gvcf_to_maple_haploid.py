@@ -25,9 +25,9 @@ def read_vcf(vcf_file_path):
     # lines to return
     lines = []
     global maple_fileout
+    global maple_root
     # Initialize the output maplefile name
     maple_fileout="initialize"
-
     
     # read gzip *.g.vcf.gz file
     try:
@@ -35,7 +35,8 @@ def read_vcf(vcf_file_path):
         with gzip.open(vcf_file_path, 'rt') as file:
 
             # replace string "g.vcf.gz" with "maple" for output file
-            maple_fileout = vcf_file_path.replace("g.vcf.gz","maple")
+            maple_fileout = vcf_file_text.replace("g.vcf.gz","maple")
+            maple_root = vcf_file_text.replace(".g.vcf.gz","")            
 
             for line in file:                       # Read each line
                 if not line.startswith('#'):        # If the line does not begin with a comment '#'
@@ -50,7 +51,8 @@ def read_vcf(vcf_file_path):
             with open(vcf_file_path, 'r') as file:
 
                 # replace string "g.vcf" with "maple" for output file                
-                maple_fileout = vcf_file_path.replace("g.vcf","maple")
+                maple_fileout = vcf_file_text.replace("g.vcf","maple")
+                maple_root = vcf_file_text.replace(".g.vcf.gz","")                            
 
                 for line in file:
                     if not line.startswith('#'):
@@ -83,11 +85,22 @@ def process_arguments_vcf():
     #
     #  No return unless 4 valid arguments have been entered.
     #
-    parser = argparse.ArgumentParser(description="A script that takes four command-line arguments.")
-    parser.add_argument("arg1", help="The first argument, the name of the g.vcf.gz file.")
-    parser.add_argument("arg2", help="The second argument, the value (integer) of the minimum read depth allowed; recommend using 20.")
-    parser.add_argument("arg3", help="The third argument, the value (integer) of the minimum confidence quality allowed; recommend using 99.")
-    parser.add_argument("arg4", help="The fourth argument, the text 'AND' or the text 'OR' (no quotes). Usage example: min_read_depth AND min_conf ; recommend using AND.")
+    parser = argparse.ArgumentParser(description='''A script that takes four command-line arguments.
+     Reads:
+      a .g.vcf.gz or .g.vcf file, a minimum read depth value, a minimum genotype quality value, an operation text
+     Returns:
+      a maple format file - processed with the following filters, reference or alternate alleles printed if;
+        the DP (read depth of the segment) is >= DP_min_val
+        the GQ (genome quality confidence value) is >= GQ_min_val
+        -e OR used as  (DP >= DP_min_val) OR (GQ >= GQ_min_val)
+        -e AND used as (DP >= DP_min_val) AND (GQ >= GQ_min_val)'''
+    ,formatter_class=argparse.RawTextHelpFormatter)
+    parser.add_argument('-i','--input_file',help='The name of the input g.vcf.gz file.',required=True)
+    parser.add_argument('-DP','--DP_MIN', help='The value (integer) of the minimum read depth; recommend using 20.',type=int,default=20)
+    parser.add_argument('-GQ','--GQ_MIN', help='The value (integer) of the minimum genotype quality; recommend using 99.',type=int,default=99)
+    parser.add_argument('-o','--operation', help='The text AND or the text OR. Usage example: min_read_depth AND min_conf ; recommend using AND.',choices=['AND','OR'],default='AND')
+    parser.add_argument('-v','--verbose',action='store_true',help='Enable verbose output')
+    args = parser.parse_args()
 
     global vcf_filename    # The first argument
     global DP_min_val      # The second argument
@@ -95,49 +108,17 @@ def process_arguments_vcf():
     global GQ_min_val      # The third argument
     global GQ_min_val_int  # The third argument cast to integer
     global choice          # The fourth argument
+    global vcf_file_text   # The text of filename
     vcf_filename = ""      # Initialize filename
     
-    # Check to see if 4 arguments have been entered
-    if len(sys.argv) != 5:  # Script name + 4 arguments 
-        print(f"Error: Please provide 4 parameters, a vcf file name to process, a DP_min_val, a GQ_min_val and 'AND' or 'OR' choice.")
-    else:
-        vcf_filename = sys.argv[1]        
-        DP_min_val = sys.argv[2]
-        GQ_min_val = sys.argv[3]
-        choice = sys.argv[4]
+    vcf_filename = args.input_file
+    DP_min_val = args.DP_MIN
+    GQ_min_val = args.GQ_MIN
+    choice = args.operation
+    vcf_file_text = vcf_filename
+    DP_min_val_int = int(DP_min_val)
+    GQ_min_val_int = int(GQ_min_val)        
         
-        if not os.path.exists(vcf_filename):
-            print(f"Error: The first argument '{vcf_filename}' is not a file.")
-            sys.exit(1)
-            
-        try:
-            DP_min_val_int = int(DP_min_val)
-        except ValueError:
-            print(f"Error: The second argument '{DP_min_val}' is not an integer.")
-            sys.exit(1)            
-        except TypeError:
-            print(f"Error: The second argument '{DP_min_val}' is not an integer, invalid type.")
-            sys.exit(1)            
-        if not DP_min_val.isdigit:
-            print(f"Error: The second argument '{DP_min_val}' is not an integer, invalid type.")
-            sys.exit(1)            
-            
-        try:
-            GQ_min_val_int = int(GQ_min_val)
-        except ValueError:
-            print(f"Error: The third argument '{GQ_min_val}' is not an integer.")
-            sys.exit(1)            
-        except TypeError:
-            print(f"Error: The third argument '{GQ_min_val}' is not an integer, invalid type.")
-            sys.exit(1)            
-        if not GQ_min_val.isdigit:
-            print(f"Error: The third argument '{GQ_min_val}' is not an integer, invalid type.")
-            sys.exit(1)
-            
-        if (choice != "AND") and (choice != "OR"):
-            print(f"Error: The fourth argument '{choice}' must be 'AND' or 'OR'.")
-            sys.exit(1)            
-
 #            
 #END of def process_arguments_vcf():
 #
@@ -251,7 +232,7 @@ if vcf_data:
                     # Check to see if this is a new chromosome; using filename as chromosome number:
                     if aline[0] != chromosome:
                         chromosome_number += 1
-                        chromosome_text = maple_fileout.replace(".maple","_") + str(chromosome_number)
+                        chromosome_text = maple_root + "_" + str(chromosome_number)
                         chromosome = aline[0]                       #save the g.vcf.gz new chromosome string
                         output_string=f">{chromosome_text}\n"       #make header for maple file data for next chromosome
 
@@ -263,6 +244,7 @@ if vcf_data:
                     # Check the DP and GQ pass the user criteria        
                     if (aline[4] == "<NON_REF>") and (aline[8].startswith("GT:DP:GQ")) and (aline[9].startswith("0:")):
                         missing_call = 0
+                        no_call = 0
                         # split aline[9] by ':' into values for 'GT:DP:GQ:'
                         stats = aline[9].split(':')
 
@@ -278,29 +260,15 @@ if vcf_data:
                         if missing_call:
                             end_of_sequence = aline[7].split('=')
 
-                            # This section is specifically for C. auris
-                            # If you are using this code for another organism, then the number of chromosomes and the
-                            # size of each chromosome will need to be altered here.
-                            # At the end of a chromosome, the increment will be 0 - not 1, we are not going to the next base
-                            increment = 1
-                            if (chromosome_number == 1) and (int(end_of_sequence[1]) == 3148135) and (int(aline[1]) != 1): increment = 0
-                            elif (chromosome_number == 2) and (int(end_of_sequence[1]) == 2554418) and (int(aline[1]) != 1): increment = 0
-                            elif (chromosome_number == 3) and (int(end_of_sequence[1]) == 2336890) and (int(aline[1]) != 1): increment = 0
-                            elif (chromosome_number == 4) and (int(end_of_sequence[1]) == 1318327) and (int(aline[1]) != 1): increment = 0
-                            elif (chromosome_number == 5) and (int(end_of_sequence[1]) == 1007026) and (int(aline[1]) != 1): increment = 0
-                            elif (chromosome_number == 6) and (int(end_of_sequence[1]) == 1004684) and (int(aline[1]) != 1): increment = 0
-                            elif (chromosome_number == 7) and (int(end_of_sequence[1]) == 880293) and (int(aline[1]) != 1): increment = 0
-                            
-                            output_string = f"n\t{aline[1]}\t{str(int(end_of_sequence[1])-int(aline[1])+int(increment))}\n"
+                            output_string = f"n\t{aline[1]}\t{str(int(end_of_sequence[1])-int(aline[1])+1)}\n"
                             outfile.write(output_string)
 
-                    # Check to see if the reference allele is only one base, if it is print as 'missing' or 'n'
+                    # Check to see if the reference allele more than one base, if more than one base then skip output
                     # This indicates a deletion - note there could possibly be an exception which is not addressed here.
                     # If the reference allele is n bases long and the best alternate allele is the same length, then this 
                     # would not be an insertion event, but the maple cannot have a multi base string (? is this true?)
                     elif len(aline[3]) > 1:
-                        output_string = f"n\t{aline[1]}\n"
-                        outfile.write(output_string)
+                        no_call = 1
                 
                     # Check to see if this is a alternate segment.  Note col 8 always starts with 'GT:'
                     # When col 4 has more than one option (has ',') as in ",<NON_REF>" aline[8] is always 'GT:AD:DP:GQ'
@@ -310,6 +278,7 @@ if vcf_data:
                     # Check the alternate allele is only one base (no inserts allowed!)
                     elif (",<NON_REF>" in aline[4]) and (aline[8].startswith("GT:AD:DP:GQ")):
                         missing_call = 0
+                        no_call = 0                        
                         # split aline[9] by ':' into values for 'GT:DP:GQ:'
                         stats = aline[9].split(':')
 
@@ -326,15 +295,15 @@ if vcf_data:
                             if ((int(stats[2]) < DP_min_val_int) and (int(stats[3]) < GQ_min_val_int)):
                                 missing_call = 1
 
-                        # check if alternate allele is only one base
+                        # check if alternate allele more than one base
                         # regardless of DP or GQ values - both an insertion and criteria not met are flagged as 'n'
                         alleles = aline[4].split(',')    # split the alternate alleles by separator ','
-                        if len(alleles[allele-1]) != 1:  # if allele length > 1 base, then it isn't valid - set missing_call = 1
-                            missing_call = 1
+                        if len(alleles[allele-1]) != 1:  # if allele length > 1 base, then it isn't valid, skip output
+                            no_call = 1
 
-                        # if critera is not met for validated alternate sequence, print sequence as 'missing' or 'n'
+                        # if critera is not met for validated alternate sequence, print sequence as 'missing' or 'n' length 1
                         if missing_call:
-                            output_string = f"n\t{aline[1]}\n"
+                            output_string = f"n\t{aline[1]}\t1\n"
                             outfile.write(output_string)
 
                         # else print the alternate genotype and its position
@@ -344,9 +313,14 @@ if vcf_data:
                 
                     # Check to see if this is a bad call
                     # When aline[8] is 'GT:GQ:PL' - there is no read depth
+                    # can't be sure if it's an indel - skip output
                     elif (aline[8].startswith("GT:GQ:PL")):
-                        output_string = f"n\t{aline[1]}\n"
-                        outfile.write(output_string)
+                        no_call = 1
+
+                    # Unknown condition catch - will be skipped in output maple file
+                    else:
+                        no_call = 1
+                        
 
         except IOError as e:   ## closes try: with open(maple_fileout, 'w') as outfile:
             print(f"An error occurred, writing to output file. {e}")
