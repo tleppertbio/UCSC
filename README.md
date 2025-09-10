@@ -98,7 +98,7 @@ When column 5 is only "<NON_REF>", column 10 always starts with 0: column 9 alwa
 When column 5 is only "<NON_REF>", there are never multiple choice alternate alleles                      
 Check reference allele passes the DP and GQ user defined criteria, if not print 'n'                                                      
                                                                                                                          
-Check to see if the reference allele is only one base, if it is print as 'missing' or 'n'          
+Check to see if the reference allele more than one base, if so skip output for this position in the maple file          
 Multiple base reference usually indicates a deletion event- note the exception is not addressed here. 
 The exception: If the reference allele is n bases long and the best alternate allele is the same length,  
 this would not be an insertion event, but the maple cannot have a multi base string (Angie? is this true?)   
@@ -108,16 +108,13 @@ When column 5 has more than one option (is has a ',') as in ",<NON_REF>", column
 When column 5 ",<NON_REF>" there can be multiple alternate alleles, the best alternate is the highest value of GT                                                                                                                     
 A possible future modification: check the AD is > DP_min_val, use DP instead of individual AD                                                                                                                     
 For the alternate allele, check the DP and GQ pass the user criteria, if not print 'n'                                          
-For the alternate allele, check the alternate allele is only one base (no inserts allowed!)                                                                    
+For the alternate allele, check the alternate allele is only one base (no inserts allowed!), skip if multiple bases.                                                                    
   
-Check to see if this is a bad call, this occurs when column 9 is 'GT:GQ:PL' - there is no read depth, print 'n'
+Check to see if this is a bad call, this occurs when column 9 is 'GT:GQ:PL' - there is no read depth, skip this position.
 
 Specifically for C. auris      
 At the start of each chromosome the header '>SRR#_chrom#' is printed in the .maple file.
-If you are using this code for another organism, then the number of chromosomes and the    
-size of each chromosome will need to be altered, this is hard coded.  The chromosome length                                      
-is tracked at end of a chromosome, the increment will be 0 - not 1, do not advance the counter
-to the base after the end of the chromosome.  
+At the end of the chromosome, the position counter is advanced to the base after the end of the chromosome.  
 
 Date of project 9/2/2025  
 Version of project v 1.0 
