@@ -52,7 +52,10 @@ def read_vcf(vcf_file_path):
 
                 # replace string "g.vcf" with "maple" for output file                
                 maple_fileout = vcf_file_text.replace("g.vcf","maple")
-                maple_root = vcf_file_text.replace(".g.vcf.gz","")                            
+                if ".g.vcf.gz" in vcf_file_text:
+                    maple_root = vcf_file_text.replace(".g.vcf.gz","")                            
+                elif ".g.vcf" in vcf_file_text:
+                    maple_root = vcf_file_text.replace(".g.vcf","")                            
 
                 for line in file:
                     if not line.startswith('#'):
@@ -158,6 +161,8 @@ def process_arguments_vcf():
 # T A,<NON_REF>            # Reference and alternate
 # A AAGGCT,<NON_REF>       # insertion of AGGCT
 # TAAAACTATGC T,<NON_REF>  # deletion of AAAACTATGC
+# A *,T,<NON_REF>          # ‘*’ indicates that the allele is missing due to a upstream deletion, can pass DP and GQ tests
+# N <NON_REF>              # Reference and no alternate - usually does not pass DP and GQ tests
 #
 # ALL possibilities for column 8
 # see.. https://gatk.broadinstitute.org/hc/en-us/articles/360035531692-VCF-Variant-Call-Format
@@ -168,6 +173,7 @@ def process_arguments_vcf():
 # RAW_MQandDP:integer:2:xxxxxx,xxx:="Raw data (sum of squared MQ and total depth) for improved RMS Mapping Quality calculation. Incompatible with deprecated RAW_MQ formulation."
 # ReadPosRankSum:float:(-)x.xxx:="Z-score from Wilcoxon rank sum test of Alt vs. Ref read position bias"
 # BaseQRankSum:float:(-_x.xxx:="Z-score from Wilcoxon rank sum test of Alt Vs. Ref base qualities"
+#                              This score only shows when the reference has a read depth > 0
 # END:integer:="Stop position of the interval" (always by itself)
 #
 # ALL possibilities for column 10 (label/format is found in column 9)
@@ -194,8 +200,8 @@ def process_arguments_vcf():
 #CP043531.1    524 . TC   T,<NON_REF>             5345.01 .     DP=119;MLEAC=1,0;MLEAF=1.00,0.00;RAW_MQandDP=428400,119 GT:AD:DP:GQ:PL:SB 1:0,119,0:119:99:5355,0,5355:0,0,82,37    ##deletion event
 #CP043531.1    544 .  A   C,AGCAC,AGCCC,<NON_REF> 5056.04 .     DP=113;MLEAC=1,0,0,0;MLEAF=1.00,0.00,0.00,0.00;RAW_MQandDP=406800,113 GT:AD:DP:GQ:PL:SB 1:0,109,1,0,0:110:99:5066,0,4891,4794,4910:0,0,73,37
 #CP043531.1   1202 .  G   T,<NON_REF>             4209.04 .     BaseQRankSum=2.013;DP=139;MLEAC=1,0;MLEAF=1.00,0.00;MQRankSum=0.000;RAW_MQandDP=500400,139;ReadPosRankSum=-1.304 GT:AD:DP:GQ:PL:SB 1:2,135,0:137:99:4219,0,4238:0,2,71,64
-#CP043531.1  25273 .  T   TAC,TCCC,TCCCC,TACCCC,TCCCCC,<NON_REF>  4047.01 . DP=97;MLEAC=0,0,1,0,0,0;MLEAF=0.00,0.00,1.00,0.00,0.00,0.00;RAW_MQandDP=349200,97 GT:AD:DP:GQ:PL:SB 3:0,0,0,90,0,0,0:90:99:4057,4139,3457,0,3597,3998,4025:0,0,38,52
-#CP043531.1 901271 .  A   AT,<NON_REF>                0   .     MLEAC=0,0;MLEAF=NaN,NaN GT:GQ:PL        .:0:0,0,0 ##insertion event
+#CP043531.1  25273 .  T   TAC,TCCC,TCCCC,TACCCC,TCCCCC,<NON_REF>  4047.01 . DP=97;MLEAC=0,0,1,0,0,0;MLEAF=0.00,0.00,1.00,0.00,0.00,0.00;RAW_MQandDP=349200,97 GT:AD:DP:GQ:PL:SB 3:0,0,0,90,0,0,0:90:99:4057,4139,3457,0,3597,3998,4025:0,0,38,52 ## insertion event
+#CP043531.1 901271 .  A   AT,<NON_REF>                0   .     MLEAC=0,0;MLEAF=NaN,NaN GT:GQ:PL  .:0:0,0,0 ## no criteria available- print as n
 #
 #
 
@@ -228,6 +234,9 @@ if vcf_data:
 
                     # split line into array aline by tab separator
                     aline = line.split('\t')
+                    
+                    # only used in if statements if GT == '.', otherwise used as a catch for omitting a line.
+                    no_call = 0                        
 
                     # Check to see if this is a new chromosome; using filename as chromosome number:
                     if aline[0] != chromosome:
@@ -238,13 +247,19 @@ if vcf_data:
 
                         outfile.write(output_string)   #print the header to the maple file
 
+                    # Check to see if the reference allele more than one base, if more than one base then skip output
+                    # This indicates a deletion - note there could possibly be an exception which is not addressed here.
+                    # If the reference allele is n bases long and the best alternate allele is the same length, then this 
+                    # would not be an insertion event, but the maple cannot have a multi base string (? is this true?)
+                    if len(aline[3]) > 1:
+                        no_call = 1
+
                     # Check to see if this is a reference segment.  Note col 8 always starts with 'GT:'
                     # When col 4 is only "<NON_REF>" aline[9] always starts with 0: aline[8] is always 'GT:DP:GQ'
                     # When col 4 is only "<NON_REF>" there are no multiple choice alternate alleles
                     # Check the DP and GQ pass the user criteria        
-                    if (aline[4] == "<NON_REF>") and (aline[8].startswith("GT:DP:GQ")) and (aline[9].startswith("0:")):
+                    elif (aline[4] == "<NON_REF>") and (aline[8].startswith("GT:DP:GQ")) and (aline[9].startswith("0:")):
                         missing_call = 0
-                        no_call = 0
                         # split aline[9] by ':' into values for 'GT:DP:GQ:'
                         stats = aline[9].split(':')
 
@@ -263,12 +278,6 @@ if vcf_data:
                             output_string = f"n\t{aline[1]}\t{str(int(end_of_sequence[1])-int(aline[1])+1)}\n"
                             outfile.write(output_string)
 
-                    # Check to see if the reference allele more than one base, if more than one base then skip output
-                    # This indicates a deletion - note there could possibly be an exception which is not addressed here.
-                    # If the reference allele is n bases long and the best alternate allele is the same length, then this 
-                    # would not be an insertion event, but the maple cannot have a multi base string (? is this true?)
-                    elif len(aline[3]) > 1:
-                        no_call = 1
                 
                     # Check to see if this is a alternate segment.  Note col 8 always starts with 'GT:'
                     # When col 4 has more than one option (has ',') as in ",<NON_REF>" aline[8] is always 'GT:AD:DP:GQ'
@@ -278,31 +287,43 @@ if vcf_data:
                     # Check the alternate allele is only one base (no inserts allowed!)
                     elif (",<NON_REF>" in aline[4]) and (aline[8].startswith("GT:AD:DP:GQ")):
                         missing_call = 0
-                        no_call = 0                        
                         # split aline[9] by ':' into values for 'GT:DP:GQ:'
                         stats = aline[9].split(':')
 
-                        allele = int(stats[0])             # index of GT 
-                        AD_values = stats[1].split(',')    # split the stats for the AD values
+                        if stats[0] == '.':
+                            allele = 0                       # index for '.' set to reference, avoid invalid indexing
+                            no_call = 1                      # avoid checking stats, no DP or GQ for '.'
+                        else:
+                            allele = int(stats[0])           # index of GT 
+                        AD_values = stats[1].split(',')      # split the stats for the AD values
                         allele_AD = int(AD_values[allele])   # find the AD for the GT - will not use
 
                         # We use the DP value rather than the individual AD
                         # check if critera is not met for validated alternate sequence
-                        if (choice == 'AND'):
+                        # if the genotype index is '.', there are not complete stats, make missing_call = 1
+                        if (choice == 'AND') and (no_call == 0):
                             if (int(stats[2]) < DP_min_val_int) or (int(stats[3]) < GQ_min_val_int):
                                 missing_call = 1
-                        elif (choice == 'OR'):
+                        elif (choice == 'OR') and (no_call == 0):
                             if ((int(stats[2]) < DP_min_val_int) and (int(stats[3]) < GQ_min_val_int)):
                                 missing_call = 1
 
                         # check if alternate allele more than one base
                         # regardless of DP or GQ values - both an insertion and criteria not met are flagged as 'n'
-                        alleles = aline[4].split(',')    # split the alternate alleles by separator ','
-                        if len(alleles[allele-1]) != 1:  # if allele length > 1 base, then it isn't valid, skip output
+                        alleles = aline[4].split(',')      # split the alternate alleles by separator ','
+                        if (allele < 1):                   # if the best allele is the reference stops further elif eval
+                            if (len(aline[3]) == 1) and missing_call:    # if ref allele is one base, and fails criteria
+                                output_string = f"n\t{aline[1]}\t1\n"
+                                outfile.write(output_string)
+                                                                         # the unstated else here is do nothing if '.'
+                        elif len(alleles[allele-1]) != 1:  # if allele length > 1 base, then it isn't valid, skip output
+                            no_call = 1
+
+                        elif alleles[allele-1] == '*':   # if allele is '*', then it is part of a deletion, skip output
                             no_call = 1
 
                         # if critera is not met for validated alternate sequence, print sequence as 'missing' or 'n' length 1
-                        if missing_call:
+                        elif missing_call:
                             output_string = f"n\t{aline[1]}\t1\n"
                             outfile.write(output_string)
 
@@ -319,8 +340,7 @@ if vcf_data:
 
                     # Unknown condition catch - will be skipped in output maple file
                     else:
-                        no_call = 1
-                        
+                        print(f"*** Unexpected line type:\n{line}", file=sys.stderr)
 
         except IOError as e:   ## closes try: with open(maple_fileout, 'w') as outfile:
             print(f"An error occurred, writing to output file. {e}")
