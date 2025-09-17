@@ -101,11 +101,12 @@ Check reference allele passes the DP and GQ user defined criteria, if not print 
 Check to see if the reference allele more than one base, if so skip output for this position in the maple file          
 Multiple base reference usually indicates a deletion event- note the exception is not addressed here. 
 The exception: If the reference allele is n bases long and the best alternate allele is the same length,  
-this would not be an insertion event, but the maple cannot have a multi base string (Angie? is this true?)   
+this would not be an insertion event, but the maple cannot have a multi base string- multiple bases are not handled at this time.  
                                                                                                                          
 Check to see if this is a alternate segment.  Note column 10, first integer indicates which alternate allele to use.
 When column 5 has more than one option (is has a ',') as in ",<NON_REF>", column 9 is always 'GT:AD:DP:GQ'  
-When column 5 ",<NON_REF>" there can be multiple alternate alleles, the best alternate is the highest value of GT                                                                                                                     
+When column 5 ",<NON_REF>" there can be multiple alternate alleles, the best alternate is indicated by the value of GT.
+When GT == '.', skip this entry
 A possible future modification: check the AD is > DP_min_val, use DP instead of individual AD                                                                                                                     
 For the alternate allele, check the DP and GQ pass the user criteria, if not print 'n'                                          
 For the alternate allele, check the alternate allele is only one base (no inserts allowed!), skip if multiple bases.                                                                    
