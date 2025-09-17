@@ -201,7 +201,8 @@ def process_arguments_vcf():
 #CP043531.1    544 .  A   C,AGCAC,AGCCC,<NON_REF> 5056.04 .     DP=113;MLEAC=1,0,0,0;MLEAF=1.00,0.00,0.00,0.00;RAW_MQandDP=406800,113 GT:AD:DP:GQ:PL:SB 1:0,109,1,0,0:110:99:5066,0,4891,4794,4910:0,0,73,37
 #CP043531.1   1202 .  G   T,<NON_REF>             4209.04 .     BaseQRankSum=2.013;DP=139;MLEAC=1,0;MLEAF=1.00,0.00;MQRankSum=0.000;RAW_MQandDP=500400,139;ReadPosRankSum=-1.304 GT:AD:DP:GQ:PL:SB 1:2,135,0:137:99:4219,0,4238:0,2,71,64
 #CP043531.1  25273 .  T   TAC,TCCC,TCCCC,TACCCC,TCCCCC,<NON_REF>  4047.01 . DP=97;MLEAC=0,0,1,0,0,0;MLEAF=0.00,0.00,1.00,0.00,0.00,0.00;RAW_MQandDP=349200,97 GT:AD:DP:GQ:PL:SB 3:0,0,0,90,0,0,0:90:99:4057,4139,3457,0,3597,3998,4025:0,0,38,52 ## insertion event
-#CP043531.1 901271 .  A   AT,<NON_REF>                0   .     MLEAC=0,0;MLEAF=NaN,NaN GT:GQ:PL  .:0:0,0,0 ## no criteria available- print as n
+#CP043531.1 901271 .  A   AT,<NON_REF>                0   .     MLEAC=0,0;MLEAF=NaN,NaN GT:GQ:PL  .:0:0,0,0 ## no criteria available- ignore
+#CP043531.1   6213 .  T   C,<NON_REF>	             0.01 .	MLEAC=0,0;MLEAF=NaN,NaN	GT:PL	.:0,0,0     ## no criteria available- ignore
 #
 #
 
@@ -335,12 +336,12 @@ if vcf_data:
                     # Check to see if this is a bad call
                     # When aline[8] is 'GT:GQ:PL' - there is no read depth
                     # can't be sure if it's an indel - skip output
-                    elif (aline[8].startswith("GT:GQ:PL")):
+                    elif (aline[8].startswith("GT:GQ:PL")) or (aline[8] == "GT:PL"):
                         no_call = 1
 
                     # Unknown condition catch - will be skipped in output maple file
                     else:
-                        print(f"*** Unexpected line type:\n{line}", file=sys.stderr)
+                        print(f"*** Unexpected line type in {vcf_filename}:\n{line}", file=sys.stderr)
 
         except IOError as e:   ## closes try: with open(maple_fileout, 'w') as outfile:
             print(f"An error occurred, writing to output file. {e}")
