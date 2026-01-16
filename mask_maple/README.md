@@ -41,23 +41,23 @@ require .maple files to only contain data for one chromosome at a time.  The fol
 file is an example of a .maple file and contains examples of different kinds of information.
 
 >\>SRR114666|State|County|Clade<br/>
->n	1	5<br/>
->A	8<br/>
->\-	10	2<br/>
->G	14<br/>
->C	15<br/>
->T	35<br/>
->n	40	12<br/>
+>n&emsp;1&emsp;5<br/>
+>A&emsp;8<br/>
+>\-&emsp;10&emsp;2<br/>
+>G&emsp;14<br/>
+>C&emsp;15<br/>
+>T&emsp;35<br/>
+>n&emsp;40&emsp;12<br/>
 
 line 1 begins with '>' and is a header for the file<br/>
 line 2 begins with 'n' - the next two columns 1 and 4 indicate that there are 'n's from sequence 1 through to sequence 4.<br/>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;n' and '-' data will have 3 columns of data, the original 'n' or '-' then in the second column, a start<br/>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; position and in the third column, the total number of n's from the start sequence.<br/>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; this case there are 4 'n's starting at sequence position 1 and ending at sequence position 4<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\'n' and '-' data will have 3 columns of data, the original 'n' or '-' then in the second column, a start<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;sequence position and in the third column, the total number of n's from the start sequence.<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;In this case there are 4 'n's starting at sequence position 1 and ending at sequence position 4<br/>
 line 3 begins with 'A' and the sequence position is 8.<br/>
 line 4 begins with '-', like the 'n', there are two columns that follow.  The column following the '-' is the start sequence<br/>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; of the sequence that is '-' or missing.  The third column is the total number of '-'s from the<br/>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp; of the missing sequence 10 to the final position of the series, sequence position 11.<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;position of the sequence that is '-' or missing.  The third column is the total number of '-'s from the<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;start of the missing sequence 10 to the final position of the series, sequence position 11.<br/>
 line 5 begins with 'G' and the sequence position is 14.<br/>
 line 6 begins with 'C' and the sequence position is 15.<br/>
 line 7 begins with 'T' and the sequence position is 35.<br/>
@@ -93,40 +93,39 @@ E = end_pos<br/>
 \+ = represents the length of the extension (for 'n' base or '-' deletion regions only)<br/>
 
 while (end_pos < location)<br/>
-&emsp;S----------E    if location is after masking region - then read the next masking region<br/>
-&emsp;&emsp;&emsp;&emsp;*<br/>                                                                                   
-
+&emsp;S----------E    if location regardless of extension, is after masking region - then read the next masking region<br/>
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\*<br/>                                                                                   
+<br>
 if (extension != 0)<br/>                                                                           
 &emsp;if (start_pos <= location) and (end_pos < location+extension) and (end_pos >= location):<br/>             
-&emsp;&emsp;S----------E    'n's or '-'s after masking region are not masked<br/>           
-&emsp;&emsp;&emsp;&emsp;\*++++<br/>
-	     
+&emsp;&emsp;S----------E    'n's or '-'s after masking region are not masked<br/>   
+<br>
+&emsp;&emsp;&emsp;&emsp;\*++++<br/>     
 &emsp;elif (start_pos >= location+extension):<br/>
-&emsp;&emsp;S----------E  'n's or '-'s prior to masking region are not masked<br/>                                     
+&emsp;&emsp;&emsp;S----------E  'n's or '-'s prior to masking region are not masked<br/>                                     
 &emsp;*++++<br/>
- 
+<br>
 &emsp;elif (start_pos > location) and (start_pos < location+extension) and (end_pos > location+extension):<br/> 
-&emsp;&emsp;S----------E    'n's or '-'s prior to masking region are not masked<br/>  
+&emsp;&emsp;&emsp;S----------E    'n's or '-'s prior to masking region are not masked<br/>  
 &emsp;&emsp;&emsp;&emsp;\*++++<br/>
- 
+<br>
 &emsp;elif (start_pos > location) and (start_pos < location+extension) and (end_pos < location+extension):<br/>
 &emsp;&emsp;S----------E    'n's or '-'s prior to and after masking region are not masked<br/>  
 &emsp;\*+++++++++++++++<br/>
-
+<br>
 &emsp;else implied default<br/>
 &emsp;&emsp;S----------E    Do not print, mask these positions<br/>                                                  
 &emsp;&emsp;&emsp;\*++++<br/>
-
+<br>
 elif (extension == 0)<br/>                                                                                  
 &emsp;if (start_pos > location)<br/>                                                                          
 &emsp;&emsp;S----------E    Do not mask this position<br/>                                                         
 &emsp;\*<br/>    
-
+<br>
 &emsp;else implied default<br/>
 &emsp;&emsp;S----------E    Do not print, mask this position<br/>                                                  
 &emsp;&emsp;&emsp;\*<br/>                                              
-
 <br>
-
-Date of project 1/13/2026
-Version of project v 3.0 
+<br>
+Date of project 1/13/2026<br/>
+Version of project v 3.0<br/>
