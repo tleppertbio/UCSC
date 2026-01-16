@@ -26,10 +26,10 @@ All files in the input file list will be masked and written to the output masked
 The path to the input .maple file is not considered in the output filename.<br/>
 An example of four different ways to write paths to .maple files.<br/>
 
-/file/to/maple/SRR111222.maple<br/>
-subdirectory/SRR2223333.maple<br/>
-../SRR113444.maple<br/>
-SRR114666.maple<br/>
+####/file/to/maple/SRR111222.maple<br/>
+####subdirectory/SRR2223333.maple<br/>
+####../SRR113444.maple<br/>
+####SRR114666.maple<br/>
 
 
 <br>
@@ -40,24 +40,24 @@ Header lines can occur multiple times in multi chromosome .maple files, in this 
 require .maple files to only contain data for one chromosome at a time.  The following 8 line
 file is an example of a .maple file and contains examples of different kinds of information.
 
->SRR114666|State|County|Clade<br/>
-n	1	5<br/>
-A	8<br/>
-\-	10	2<br/>
-G	14<br/>
-C	15<br/>
-T	35<br/>
-n	40	12<br/>
+>\>SRR114666|State|County|Clade<br/>
+>n	1	5<br/>
+>A	8<br/>
+>\-	10	2<br/>
+>G	14<br/>
+>C	15<br/>
+>T	35<br/>
+>n	40	12<br/>
 
 line 1 begins with '>' and is a header for the file<br/>
 line 2 begins with 'n' - the next two columns 1 and 4 indicate that there are 'n's from sequence 1 through to sequence 4.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;'n' and '-' data will have 3 columns of data, the original 'n' or '-' then in the second column, a start<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;sequence position and in the third column, the total number of n's from the start sequence.<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;In this case there are 4 'n's starting at sequence position 1 and ending at sequence position 4<br/>
+&emsp;&emsp;&emsp;&emsp;'n' and '-' data will have 3 columns of data, the original 'n' or '-' then in the second column, a start<br/>
+&emsp;&emsp;&emsp;&emsp;sequence position and in the third column, the total number of n's from the start sequence.<br/>
+&emsp;&emsp;&emsp;&emsp;In this case there are 4 'n's starting at sequence position 1 and ending at sequence position 4<br/>
 line 3 begins with 'A' and the sequence position is 8.<br/>
 line 4 begins with '-', like the 'n', there are two columns that follow.  The column following the '-' is the start sequence<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;position of the sequence that is '-' or missing.  The third column is the total number of '-'s from the<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;start of the missing sequence 10 to the final position of the series, sequence position 11.<br/>
+&emsp;&emsp;&emsp;&emsp;position of the sequence that is '-' or missing.  The third column is the total number of '-'s from the<br/>
+&emsp;&emsp;&emsp;&emsp;start of the missing sequence 10 to the final position of the series, sequence position 11.<br/>
 line 5 begins with 'G' and the sequence position is 14.<br/>
 line 6 begins with 'C' and the sequence position is 15.<br/>
 line 7 begins with 'T' and the sequence position is 35.<br/>
@@ -99,32 +99,32 @@ while (end_pos < location)<br/>
 if (extension != 0)<br/>                                                                           
   if (start_pos <= location) and (end_pos < location+extension) and (end_pos >= location):<br/>             
     S----------E    'n's or '-'s after masking region are not masked<br/>           
-&nbsp;&nbsp;&nbsp;&nbsp;++<br/>
+&emsp;&emsp;&emsp;&emsp;\*++++<br/>
 	     
   elif (start_pos >= location+extension):<br/>
     S----------E  'n's or '-'s prior to masking region are not masked<br/>                                     
-  *++++<br/>
+  \*++++<br/>
  
   elif (start_pos > location) and (start_pos < location+extension) and (end_pos > location+extension):<br/> 
     S----------E    'n's or '-'s prior to masking region are not masked<br/>  
-  *++++<br/>
+  \*++++<br/>
  
   elif (start_pos > location) and (start_pos < location+extension) and (end_pos < location+extension):<br/>
     S----------E    'n's or '-'s prior to and after masking region are not masked<br/>  
-  *+++++++++++++++<br/>
+  \*+++++++++++++++<br/>
 
   else implied default<br/>
     S----------E    Do not print, mask these positions<br/>                                                  
-&nbsp;&nbsp;&nbsp;*++++<br/>
+&emsp;&emsp;&emsp;\*++++<br/>
 
 elif (extension == 0)<br/>                                                                                  
   if (start_pos > location)<br/>                                                                          
     S----------E    Do not mask this position<br/>                                                         
-  *<br/>    
+  \*<br/>    
 
   else implied default<br/>
     S----------E    Do not print, mask this position<br/>                                                  
-&nbsp;&nbsp;&nbsp;*<br/>                                              
+&emsp;&emsp;&emsp;\*<br/>                                              
 
 <br>
 
