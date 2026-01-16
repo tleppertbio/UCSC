@@ -1,6 +1,7 @@
 
-# Software developed at UCSC for the use of building and analyzing taxonomy trees for pathogens.
+## Software developed at UCSC 
+# for the use of building and analyzing taxonomy trees for pathogens.
 
-gvcf_to_maple_haploid - software to translate .gvcf files to .maple format
-mask_maple            - software to mask regions of .maple files using .bed format masking regions (single chromosome only)
+gvcf_to_maple_haploid - software to translate .gvcf files to .maple format<br/>
+mask_maple            - software to mask regions of .maple files using .bed format masking regions (single chromosome only)<br>
 
