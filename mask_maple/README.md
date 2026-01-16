@@ -99,15 +99,15 @@ while (end_pos < location)
 if (extension != 0)  
 &emsp;if (start_pos <= location) and (end_pos < location+extension) and (end_pos >= location):  
 &emsp;&emsp;S----------E    'n's or '-'s after masking region are not masked  
-&emsp;&emsp;&emsp;&emsp;&emsp;\*++++  
+&emsp;&emsp;&emsp;&emsp;&emsp;&ensp;\*++++  
   
 &emsp;elif (start_pos >= location+extension):  
-&emsp;&emsp;&emsp;&emsp;S----------E  'n's or '-'s prior to masking region are not masked  
+&emsp;&emsp;&emsp;&emsp;&ensp;S----------E  'n's or '-'s prior to masking region are not masked  
 &emsp;*++++  
   
 &emsp;elif (start_pos > location) and (start_pos < location+extension) and (end_pos > location+extension):  
 &emsp;&emsp;&emsp;S----------E    'n's or '-'s prior to masking region are not masked  
-&emsp;&emsp;&emsp;&emsp;\*++++  
+&emsp;&emsp;&emsp;\*++++  
   
 &emsp;elif (start_pos > location) and (start_pos < location+extension) and (end_pos < location+extension):  
 &emsp;&emsp;S----------E    'n's or '-'s prior to and after masking region are not masked  
