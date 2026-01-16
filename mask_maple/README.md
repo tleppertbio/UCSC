@@ -9,9 +9,9 @@ Reads a list of .maple sample files and a .bed mask file and returns the masked 
 
 mask_maple.py takes 3 command line Arguments:  
 
-     1) -l file containing a list of .maple files, file paths to files are relative to current directory.<br/>
-     2) -m a .bed file (string): .bed file contains masking regions.<br/>
-     3) -d directory to use to store all the processed masked .maple files, file path relative to current directory<br/>
+     1) -l file containing a list of .maple files, file paths to files are relative to current directory.
+     2) -m a .bed file (string): .bed file contains masking regions.
+     3) -d directory to use to store all the processed masked .maple files, file path relative to current directory.
         
 Example:                                                                                                                   
   mask_maple.py -l maple.list -m mask.bed -d masked_maples
@@ -43,7 +43,7 @@ file is an example of a .maple file and contains examples of different kinds of 
 >SRR114666|State|County|Clade<br/>
 n	1	5<br/>
 A	8<br/>
--	10	2<br/>
+\-	10	2<br/>
 G	14<br/>
 C	15<br/>
 T	35<br/>
@@ -51,13 +51,13 @@ n	40	12<br/>
 
 line 1 begins with '>' and is a header for the file<br/>
 line 2 begins with 'n' - the next two columns 1 and 4 indicate that there are 'n's from sequence 1 through to sequence 4.<br/>
-                   'n' and '-' data will have 3 columns of data, the original 'n' or '-' then in the second column, a start<br/>
-		   sequence position and in the third column, the total number of n's from the start sequence.<br/>
-		   In this case there are 4 'n's starting at sequence position 1 and ending at sequence position 4<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;'n' and '-' data will have 3 columns of data, the original 'n' or '-' then in the second column, a start<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;sequence position and in the third column, the total number of n's from the start sequence.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;In this case there are 4 'n's starting at sequence position 1 and ending at sequence position 4<br/>
 line 3 begins with 'A' and the sequence position is 8.<br/>
 line 4 begins with '-', like the 'n', there are two columns that follow.  The column following the '-' is the start sequence<br/>
-                   position of the sequence that is '-' or missing.  The third column is the total number of '-'s from the<br/>
-		   start of the missing sequence 10 to the final position of the series, sequence position 11.<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;position of the sequence that is '-' or missing.  The third column is the total number of '-'s from the<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;start of the missing sequence 10 to the final position of the series, sequence position 11.<br/>
 line 5 begins with 'G' and the sequence position is 14.<br/>
 line 6 begins with 'C' and the sequence position is 15.<br/>
 line 7 begins with 'T' and the sequence position is 35.<br/>
@@ -89,8 +89,8 @@ masking will end.
 
 S = start_pos<br/>
 E = end_pos<br/>
-* = location<br/>
-+ = represents the length of the extension (for 'n' base or '-' deletion regions only)<br/>
+\* = location<br/>
+\+ = represents the length of the extension (for 'n' base or '-' deletion regions only)<br/>
 
 while (end_pos < location)<br/>
     S----------E    if location is after masking region - then read the next masking region<br/>
@@ -99,15 +99,15 @@ while (end_pos < location)<br/>
 if (extension != 0)<br/>                                                                           
   if (start_pos <= location) and (end_pos < location+extension) and (end_pos >= location):<br/>             
     S----------E    'n's or '-'s after masking region are not masked<br/>           
-             *++++<br/>
+&nbsp;&nbsp;&nbsp;&nbsp;++<br/>
 	     
   elif (start_pos >= location+extension):<br/>
-        S----------E  'n's or '-'s prior to masking region are not masked<br/>                                     
- *++++<br/>
+    S----------E  'n's or '-'s prior to masking region are not masked<br/>                                     
+  *++++<br/>
  
   elif (start_pos > location) and (start_pos < location+extension) and (end_pos > location+extension):<br/> 
     S----------E    'n's or '-'s prior to masking region are not masked<br/>  
- *++++<br/>
+  *++++<br/>
  
   elif (start_pos > location) and (start_pos < location+extension) and (end_pos < location+extension):<br/>
     S----------E    'n's or '-'s prior to and after masking region are not masked<br/>  
@@ -115,7 +115,7 @@ if (extension != 0)<br/>
 
   else implied default<br/>
     S----------E    Do not print, mask these positions<br/>                                                  
-        *++++<br/>
+&nbsp;&nbsp;&nbsp;*++++<br/>
 
 elif (extension == 0)<br/>                                                                                  
   if (start_pos > location)<br/>                                                                          
@@ -123,8 +123,8 @@ elif (extension == 0)<br/>
   *<br/>    
 
   else implied default<br/>
-  S----------E    Do not print, mask this position<br/>                                                  
-        *<br/>                                              
+    S----------E    Do not print, mask this position<br/>                                                  
+&nbsp;&nbsp;&nbsp;*<br/>                                              
 
 <br>
 
