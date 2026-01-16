@@ -1,0 +1,83 @@
+n	1	372         correct output   n 1 4 and next line n 372 2
+NC_072812.1	4	371	20	929
+              *-------------
+
+n	7410	8           correct output   n 7410 8
+NC_072812.1	7417	7453	13	916
+          *----
+
+n	37240	8           correct output   n 37240 7
+NC_072812.1	37246	37282	2	944
+           *-----
+
+n	40021	10          correct output   n 40021 1
+NC_072812.1	40021	40050	3	862
+               *-----
+	       
+n	57896	10          correct output   line removed
+NC_072812.1	57895	57950	27	927
+                *-----
+
+n	62017	65          correct output   line removed
+NC_072812.1	62015	62082	27	910
+                 *----------
+		 
+n	63429	9          correct output    line removed
+NC_072812.1	63365	63438	18	958
+                       *-----
+
+n	73186	10          correct output   n 73187 9?
+NC_072812.1	73133	73186	15	924
+                            *-----
+
+n	94544	10          correct output   n 94544 10
+NC_072812.1	94499	94543	9	886
+                             *-----
+			     
+T	290032              correct output   T 290032
+NC_072812.1	290032	290081	12	857
+               *
+
+G	291138              correct output   line removed
+NC_072812.1	291137	291278	9	900
+                *
+
+C	343141              correct output   line removed
+NC_072812.1	343139	343217	36	910
+                 *
+
+T	370106               correct output  line removed
+NC_072812.1	370073	370107	6	882
+                            *
+
+A	466070                correct output line removed
+NC_072812.1	465968	466070	21	833
+                             *
+			     
+C	501739                correct output C 501739
+NC_072812.1	501635	501738	49	864
+                              *
+
+n	515051	55            correct output line removed
+NC_072812.1	515050	515106	21	910
+                *-------------
+
+n	515362	36            correct output line removed
+NC_072812.1	515361	515399	9	894
+                *------------
+
+n	574193	34            correct output line removed
+NC_072812.1	574191	574227	3	972
+                 *------------
+
+n	576064	127           correct output line removed
+NC_072812.1	576062	576192	12	784
+                 *-----------
+
+n	580644	75            correct output n 580644 1 and next line n 580719 1
+NC_072812.1	580644	580718	12	797
+               *---------------
+	       
+n	3147913	223           correct output n 3147913 9 and next line n 3148136 1
+NC_072812.1	3147921	3148135	21	934
+              *----------------

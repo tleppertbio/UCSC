@@ -1,0 +1,1 @@
+python3 mask_maple.py -l chrom_nhin_short.list -m fasTAN.bed -d mask_chrom1
