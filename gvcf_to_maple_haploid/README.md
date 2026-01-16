@@ -10,16 +10,16 @@ Reads an interprets a C. auris .g.vcf.gz sample file and returns its content in 
 
 gvcf_to_maple_haploid.py takes 4 command line Arguments:  
 
-     1) vcf_file_path (str): Path to the .g.vcf.gz file (can read non gzipped files).                                                           
-     2) DP_min_val: Minimum Read Depth - bases/sequences with read depth < this value will be returned as 'n'          
+     1) -i vcf_file_path (str): Path to the .g.vcf.gz file (can read non gzipped files).                                                           
+     2) -DP DP_min_val: Minimum Read Depth - bases/sequences with read depth < this value will be returned as 'n'          
         recommended value 20 - minimum read depth of 20 to pass                                                        
-     3) GQ_min_val: Minimum Genotype Quality - bases/sequences with GQ < this value will be returned as 'n'             
+     3) -GQ GQ_min_val: Minimum Genotype Quality - bases/sequences with GQ < this value will be returned as 'n'             
         recommended value 99 - minimum GQ score of 99 to pass                                                          
-     4) "AND" or "OR" - used as: DP_min_val AND GQ_min_val, or used as DP_min_val OR GQ_min_val criteria.              
+     4) -o "AND" or "OR" - used as: DP_min_val AND GQ_min_val, or used as DP_min_val OR GQ_min_val criteria.              
         recommended value AND - DP_min_val AND GQ_min_val - both DP_min_val AND GQ_min_val must pass to meet criteria  
         
 Example:                                                                                                                   
-  gvcf_to_maple_haploid.py SRR21943188.g.vcf.gz 20 99 AND                                                               
+  gvcf_to_maple_haploid.py -i SRR21943188.g.vcf.gz -DP 20 -GQ 99 -o AND                                                               
                                                                                                                                                                                                                                                 
 ---
 
