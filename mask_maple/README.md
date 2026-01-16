@@ -1,7 +1,6 @@
 
 # mask_maple.py
 
-**What does this mask_maple.py do**
 Reads a list of .maple sample files and a .bed mask file and returns the masked .maple files in a user defined directory.
 
 ---
@@ -10,9 +9,9 @@ Reads a list of .maple sample files and a .bed mask file and returns the masked 
 
 mask_maple.py takes 3 command line Arguments:  
 
-     1) -l file containing a list of .maple files, file paths to files are relative to current directory.
-     2) -m a .bed file (string): .bed file contains masking regions.
-     3) -d directory to use to store all the processed masked .maple files, file path relative to current directory
+     1) -l file containing a list of .maple files, file paths to files are relative to current directory.<br/>
+     2) -m a .bed file (string): .bed file contains masking regions.<br/>
+     3) -d directory to use to store all the processed masked .maple files, file path relative to current directory<br/>
         
 Example:                                                                                                                   
   mask_maple.py -l maple.list -m mask.bed -d masked_maples
@@ -22,15 +21,15 @@ Example:
 <br>
 
 ## Input file with list of .maple files.
-A file with list of .maple files, paths are relative to the current directory.
-All files in the input file list will be masked and written to the output masked .maple files
-The path to the input .maple file is not considered in the output filename.
-An example of four different ways to write paths to .maple files.
+A file with list of .maple files, paths are relative to the current directory.<br/>
+All files in the input file list will be masked and written to the output masked .maple files<br/>
+The path to the input .maple file is not considered in the output filename.<br/>
+An example of four different ways to write paths to .maple files.<br/>
 
-/file/to/maple/SRR111222.maple
-subdirectory/SRR2223333.maple
-../SRR113444.maple
-SRR114666.maple
+/file/to/maple/SRR111222.maple<br/>
+subdirectory/SRR2223333.maple<br/>
+../SRR113444.maple<br/>
+SRR114666.maple<br/>
 
 
 <br>
@@ -41,28 +40,28 @@ Header lines can occur multiple times in multi chromosome .maple files, in this 
 require .maple files to only contain data for one chromosome at a time.  The following 8 line
 file is an example of a .maple file and contains examples of different kinds of information.
 
->SRR114666|State|County|Clade
-n	1	5
-A	8
--	10	2
-G	14
-C	15
-T	35
-n	40	12
+>SRR114666|State|County|Clade<br/>
+n	1	5<br/>
+A	8<br/>
+-	10	2<br/>
+G	14<br/>
+C	15<br/>
+T	35<br/>
+n	40	12<br/>
 
-line 1 begins with '>' and is a header for the file
-line 2 begins with 'n' - the next two columns 1 and 4 indicate that there are 'n's from sequence 1 through to sequence 4.
-                   'n' and '-' data will have 3 columns of data, the original 'n' or '-' then in the second column, a start
-		   sequence position and in the third column, the total number of n's from the start sequence.
-		   In this case there are 4 'n's starting at sequence position 1 and ending at sequence position 4
-line 3 begins with 'A' and the sequence position is 8.
-line 4 begins with '-', like the 'n', there are two columns that follow.  The column following the '-' is the start sequence
-                   position of the sequence that is '-' or missing.  The third column is the total number of '-'s from the
-		   start of the missing sequence 10 to the final position of the series, sequence position 11.
-line 5 begins with 'G' and the sequence position is 14.
-line 6 begins with 'C' and the sequence position is 15.
-line 7 begins with 'T' and the sequence position is 35.
-line 8 begins with 'n', the n's on this line span from sequence position 40 to sequence position 51.
+line 1 begins with '>' and is a header for the file<br/>
+line 2 begins with 'n' - the next two columns 1 and 4 indicate that there are 'n's from sequence 1 through to sequence 4.<br/>
+                   'n' and '-' data will have 3 columns of data, the original 'n' or '-' then in the second column, a start<br/>
+		   sequence position and in the third column, the total number of n's from the start sequence.<br/>
+		   In this case there are 4 'n's starting at sequence position 1 and ending at sequence position 4<br/>
+line 3 begins with 'A' and the sequence position is 8.<br/>
+line 4 begins with '-', like the 'n', there are two columns that follow.  The column following the '-' is the start sequence<br/>
+                   position of the sequence that is '-' or missing.  The third column is the total number of '-'s from the<br/>
+		   start of the missing sequence 10 to the final position of the series, sequence position 11.<br/>
+line 5 begins with 'G' and the sequence position is 14.<br/>
+line 6 begins with 'C' and the sequence position is 15.<br/>
+line 7 begins with 'T' and the sequence position is 35.<br/>
+line 8 begins with 'n', the n's on this line span from sequence position 40 to sequence position 51.<br/>
 		   
 		  
 
@@ -88,44 +87,44 @@ masking will end.
                                      
 ### Algorithm
 
-S = start_pos
-E = end_pos
-* = location
-+ = represents the length of the extension (for 'n' base or '-' deletion regions only)
+S = start_pos<br/>
+E = end_pos<br/>
+* = location<br/>
++ = represents the length of the extension (for 'n' base or '-' deletion regions only)<br/>
 
-while (end_pos < location)
-    S----------E    if location is after masking region - then read the next masking region
-                    *                                                                                   
+while (end_pos < location)<br/>
+    S----------E    if location is after masking region - then read the next masking region<br/>
+                    *<br/>                                                                                   
 
-if (extension != 0)                                                                                  
-  if (start_pos <= location) and (end_pos < location+extension) and (end_pos >= location):             
-    S----------E    'n's or '-'s after masking region are not masked                                      
-             *++++
+if (extension != 0)<br/>                                                                           
+  if (start_pos <= location) and (end_pos < location+extension) and (end_pos >= location):<br/>             
+    S----------E    'n's or '-'s after masking region are not masked<br/>           
+             *++++<br/>
 	     
-  elif (start_pos >= location+extension):
-        S----------E  'n's or '-'s prior to masking region are not masked                                      
- *++++
+  elif (start_pos >= location+extension):<br/>
+        S----------E  'n's or '-'s prior to masking region are not masked<br/>                                     
+ *++++<br/>
  
-  elif (start_pos > location) and (start_pos < location+extension) and (end_pos > location+extension): 
-    S----------E    'n's or '-'s prior to masking region are not masked                                      
- *++++
+  elif (start_pos > location) and (start_pos < location+extension) and (end_pos > location+extension):<br/> 
+    S----------E    'n's or '-'s prior to masking region are not masked<br/>  
+ *++++<br/>
  
-  elif (start_pos > location) and (start_pos < location+extension) and (end_pos < location+extension): 
-    S----------E    'n's or '-'s prior to and after masking region are not masked                            
-  *+++++++++++++++
+  elif (start_pos > location) and (start_pos < location+extension) and (end_pos < location+extension):<br/>
+    S----------E    'n's or '-'s prior to and after masking region are not masked<br/>  
+  *+++++++++++++++<br/>
 
-  else implied default
-    S----------E    Do not print, mask these positions                                                  
-        *++++
+  else implied default<br/>
+    S----------E    Do not print, mask these positions<br/>                                                  
+        *++++<br/>
 
-elif (extension == 0)                                                                                  
-  if (start_pos > location)                                                                          
-    S----------E    Do not mask this position                                                         
-  *    
+elif (extension == 0)<br/>                                                                                  
+  if (start_pos > location)<br/>                                                                          
+    S----------E    Do not mask this position<br/>                                                         
+  *<br/>    
 
-  else implied default
-  S----------E    Do not print, mask this position                                                  
-        *                                                                                            
+  else implied default<br/>
+  S----------E    Do not print, mask this position<br/>                                                  
+        *<br/>                                              
 
 <br>
 
