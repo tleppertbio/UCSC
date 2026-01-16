@@ -92,40 +92,41 @@ E = end_pos<br/>
 \* = location<br/>
 \+ = represents the length of the extension (for 'n' base or '-' deletion regions only)<br/>
 
-while (end_pos < location)<br/>
-&emsp;S----------E    if location regardless of extension, is after masking region - then read the next masking region<br/>
-&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\*<br/>                                                                                   
+while (end_pos < location)  
+&emsp;S----------E    if location regardless of extension, is after masking region - then read the next masking region  
+&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;\*  
+  
+if (extension != 0)  
+&emsp;if (start_pos <= location) and (end_pos < location+extension) and (end_pos >= location):  
+&emsp;&emsp;S----------E    'n's or '-'s after masking region are not masked  
+  
+&emsp;&emsp;&emsp;&emsp;\*++++  
+&emsp;elif (start_pos >= location+extension):  
+&emsp;&emsp;&emsp;S----------E  'n's or '-'s prior to masking region are not masked  
+&emsp;*++++  
+  
+&emsp;elif (start_pos > location) and (start_pos < location+extension) and (end_pos > location+extension):  
+&emsp;&emsp;&emsp;S----------E    'n's or '-'s prior to masking region are not masked  
+&emsp;&emsp;&emsp;&emsp;\*++++  
+  
+&emsp;elif (start_pos > location) and (start_pos < location+extension) and (end_pos < location+extension):  
+&emsp;&emsp;S----------E    'n's or '-'s prior to and after masking region are not masked  
+&emsp;\*+++++++++++++++  
+  
+&emsp;else implied default  
+&emsp;&emsp;S----------E    Do not print, mask these positions  
+&emsp;&emsp;&emsp;\*++++  
+  
+elif (extension == 0)  
+&emsp;if (start_pos > location)  
+&emsp;&emsp;S----------E    Do not mask this position  
+&emsp;\*  
+  
+&emsp;else implied default  
+&emsp;&emsp;S----------E    Do not print, mask this position  
+&emsp;&emsp;&emsp;\*  
+  
 <br>
-if (extension != 0)<br/>                                                                           
-&emsp;if (start_pos <= location) and (end_pos < location+extension) and (end_pos >= location):<br/>             
-&emsp;&emsp;S----------E    'n's or '-'s after masking region are not masked<br/>   
-<br>
-&emsp;&emsp;&emsp;&emsp;\*++++<br/>     
-&emsp;elif (start_pos >= location+extension):<br/>
-&emsp;&emsp;&emsp;S----------E  'n's or '-'s prior to masking region are not masked<br/>                                     
-&emsp;*++++<br/>
-<br>
-&emsp;elif (start_pos > location) and (start_pos < location+extension) and (end_pos > location+extension):<br/> 
-&emsp;&emsp;&emsp;S----------E    'n's or '-'s prior to masking region are not masked<br/>  
-&emsp;&emsp;&emsp;&emsp;\*++++<br/>
-<br>
-&emsp;elif (start_pos > location) and (start_pos < location+extension) and (end_pos < location+extension):<br/>
-&emsp;&emsp;S----------E    'n's or '-'s prior to and after masking region are not masked<br/>  
-&emsp;\*+++++++++++++++<br/>
-<br>
-&emsp;else implied default<br/>
-&emsp;&emsp;S----------E    Do not print, mask these positions<br/>                                                  
-&emsp;&emsp;&emsp;\*++++<br/>
-<br>
-elif (extension == 0)<br/>                                                                                  
-&emsp;if (start_pos > location)<br/>                                                                          
-&emsp;&emsp;S----------E    Do not mask this position<br/>                                                         
-&emsp;\*<br/>    
-<br>
-&emsp;else implied default<br/>
-&emsp;&emsp;S----------E    Do not print, mask this position<br/>                                                  
-&emsp;&emsp;&emsp;\*<br/>                                              
-<br>
-<br>
+  
 Date of project 1/13/2026<br/>
 Version of project v 3.0<br/>
