@@ -41,13 +41,13 @@ require .maple files to only contain data for one chromosome at a time.  The fol
 file is an example of a .maple file and contains examples of different kinds of information.
 
 >\>SRR114666|State|County|Clade<br/>
->n&emsp;1&emsp;5<br/>
->A&emsp;8<br/>
->\-&emsp;10&emsp;2<br/>
->G&emsp;14<br/>
->C&emsp;15<br/>
->T&emsp;35<br/>
->n&emsp;40&emsp;12<br/>
+>n&emsp;&emsp;1&emsp;&emsp;5<br/>
+>A&emsp;&emsp;8<br/>
+>\-&emsp;&emsp;10&emsp;&emsp;2<br/>
+>G&emsp;&emsp;14<br/>
+>C&emsp;&emsp;15<br/>
+>T&emsp;&emsp;35<br/>
+>n&emsp;&emsp;40&emsp;&emsp;12<br/>
 
 line 1 begins with '>' and is a header for the file<br/>
 line 2 begins with 'n' - the next two columns 1 and 4 indicate that there are 'n's from sequence 1 through to sequence 4.<br/>
@@ -66,8 +66,7 @@ line 8 begins with 'n', the n's on this line span from sequence position 40 to s
 		  
 
 <br>
-                                                                                                                 
-## Input .bed file format
+  
 A 5 column tab separated table.  The first column is the string that represents the RefSeq number, these numbers are
 associated with a chromosome.  Note again here, the .maple files should only contain 1 chromosome at a time and likewise,
 the .bed file should also only contain one chromosome at a time.  This program does NOT check to see if you are using
@@ -81,10 +80,10 @@ files do not share the same indexing algorithm.  The .maple file starts indexing
 starts the indexing of the sequence at position 0.  You will see in the mask_maple.py algorithm that the start_pos will
 have +1 added as it is read in.  The end position will not have this offset applied.  The end position in the .bed file
 is known as 'half-open' index. This means that the end position indicated is the actual index of the sequence where the
-masking will end.
+masking will end.<br/>
 
 <br>
-                                     
+  
 ### Algorithm
 
 S = start_pos<br/>
@@ -125,7 +124,7 @@ elif (extension == 0)
 &emsp;else implied default  
 &emsp;&emsp;S----------E&emsp;&emsp;&emsp;Do not print, mask this position  
 &emsp;&emsp;&emsp;\*  
-  
+  <br/>
 <br>
   
 Date of project 1/13/2026<br/>
