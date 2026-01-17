@@ -66,7 +66,9 @@ line 8 begins with 'n', the n's on this line span from sequence position 40 to s
 		  
 
 <br>
-  
+
+## Input .bed file format
+
 A 5 column tab separated table.  The first column is the string that represents the RefSeq number, these numbers are
 associated with a chromosome.  Note again here, the .maple files should only contain 1 chromosome at a time and likewise,
 the .bed file should also only contain one chromosome at a time.  This program does NOT check to see if you are using
@@ -83,8 +85,8 @@ is known as 'half-open' index. This means that the end position indicated is the
 masking will end.<br/>
 
 <br>
-  
-### Algorithm
+
+## Algorithm
 
 S = start_pos<br/>
 E = end_pos<br/>
